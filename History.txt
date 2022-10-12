@@ -1,0 +1,10 @@
+NGPFlash revision history
+-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+V0.2.0 - 2022-10-12 (FluBBa)
+	Moved to its own repository.
+
+V0.0.0 - 2019-xx-xx (FluBBa)
+	Started coding.
+
