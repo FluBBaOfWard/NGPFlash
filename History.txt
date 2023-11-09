@@ -2,6 +2,9 @@ NGPFlash revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
 
+V0.2.1 - 2023-11-09 (FluBBa)
+	Fixed writing to also support 16-bit memory.
+
 V0.2.0 - 2022-10-12 (FluBBa)
 	Moved to its own repository.
 

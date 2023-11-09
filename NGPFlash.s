@@ -79,7 +79,7 @@ ngpFlashSaveState:			;@ In r0=destination, r1=fptr. Out r0=state size.
 	mov r5,r1					;@ Store fptr (r1)
 
 	ldmfd sp!,{r4,r5,lr}
-	ldr r0,=0x14
+	ldr r0,=NGPFlashSize
 	bx lr
 ;@----------------------------------------------------------------------------
 ngpFlashLoadState:			;@ In r0=fptr, r1=source. Out r0=state size.
@@ -95,7 +95,7 @@ ngpFlashLoadState:			;@ In r0=fptr, r1=source. Out r0=state size.
 ngpFlashGetStateSize:		;@ Out r0=state size.
 	.type   ngpFlashGetStateSize STT_FUNC
 ;@----------------------------------------------------------------------------
-	ldr r0,=0x14
+	ldr r0,=NGPFlashSize
 	bx lr
 
 
@@ -103,6 +103,8 @@ ngpFlashGetStateSize:		;@ Out r0=state size.
 getFlashHIBlocksAddress:
 	.type   getFlashHIBlocksAddress STT_FUNC
 ;@----------------------------------------------------------------------------
+	ldr r0,=flashBlocks2
+	bx lr
 ;@----------------------------------------------------------------------------
 getFlashLOBlocksAddress:
 	.type   getFlashLOBlocksAddress STT_FUNC
@@ -284,7 +286,7 @@ FlashCommand:				;@ F_COMMAND
 
 	cmp r0,#CMD_ID_READ
 	ldreq r1,=ReadFlashInfo
-	streq r1,[t9optbl,#readRomPtrLo]
+	streq r1,[t9ptr,#readRomPtrLo]
 	moveq r2,#0
 	beq FlashCycEnd
 
@@ -341,7 +343,8 @@ FlashProtect:
 ;@----------------------------------------------------------------------------
 FlashWrite:					;@ F_ID_READ
 ;@----------------------------------------------------------------------------
-	mov r4,r0
+	and r4,r0,#0xFF
+	sub r4,r4,#0x100			;@ Set all other bits
 	mov r5,r1					;@ Save address in r5
 	mov r0,r5
 	bl checkProtectFromAdr
@@ -350,16 +353,19 @@ FlashWrite:					;@ F_ID_READ
 	mov r0,r5
 	bl markBlockModifiedFromAddress
 	bic r1,r5,#0xFE00000
+	tst r1,#1
+	movne r4,r4,ror#24
 	ldr r2,flashMemory
-	ldrb r3,[r2,r1]
+	bic r1,r1,#1
+	ldrh r3,[r2,r1]
 	and r3,r3,r4
-	strb r3,[r2,r1]
+	strh r3,[r2,r1]
 
 FlashSetRead:
 	mov r0,#CMD_READ
 	strb r0,currentCommand
 	ldr r1,=tlcs_rom_R
-	str r1,[t9optbl,#readRomPtrLo]
+	str r1,[t9ptr,#readRomPtrLo]
 	mov r2,#0
 FlashCycEnd:
 	strb r2,currentWriteCycle
