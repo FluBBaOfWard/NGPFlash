@@ -20,6 +20,7 @@
 	.global getBlockSize
 	.global getBlockFromAddress
 	.global flashSize
+	.global ReadFlashInfo
 
 	.syntax unified
 	.arm
