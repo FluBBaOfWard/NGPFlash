@@ -3,11 +3,15 @@
 #ifdef __arm__
 
 #include "NGPFlash.i"
-#include "../TLCS900H/TLCS900H.i"
+#include "../TLCS900H/TLCS900H_mac.h"
 
 	.global ngpFlashReset
 	.global FlashWriteLO
 	.global FlashWriteHI
+	.global FlashReadByteLo
+	.global FlashReadByteHi
+	.global FlashReadWordLo
+	.global FlashReadWordHi
 	.global getFlashLOBlocksAddress
 	.global getFlashHIBlocksAddress
 	.global isBlockDirty
@@ -285,8 +289,8 @@ FlashCommand:				;@ F_COMMAND
 	beq FlashCycEnd
 
 	cmp r0,#CMD_ID_READ
-	ldreq r1,=ReadFlashInfo
-	streq r1,[t9ptr,#readRomPtrLo]
+	ldreq r1,=infoMode
+	strbeq r0,[r1]
 	moveq r2,#0
 	beq FlashCycEnd
 
@@ -364,8 +368,8 @@ FlashWrite:					;@ F_ID_READ
 FlashSetRead:
 	mov r0,#CMD_READ
 	strb r0,currentCommand
-	ldr r1,=tlcs_rom_R
-	str r1,[t9ptr,#readRomPtrLo]
+	ldr r1,=infoMode
+	strb r0,[r1]
 	mov r2,#0
 FlashCycEnd:
 	strb r2,currentWriteCycle
@@ -391,13 +395,51 @@ currentWriteCycle:
 currentCommand:
 	.byte 0
 
-flashBlocks:					;@ Bit 1=write neabled, bit 7=modified.
+flashBlocks:					;@ Bit 1=write enabled, bit 7=modified.
 	.space MAX_BLOCKS
-flashBlocks2:					;@ Bit 1=write neabled, bit 7=modified.
+flashBlocks2:					;@ Bit 1=write enabled, bit 7=modified.
 	.space MAX_BLOCKS
 ;@ Padding
 	.align 2
 
-
+#ifdef NDS
+	.section .itcm						;@ For the NDS ARM9
+#elif GBA
+	.section .iwram, "ax", %progbits	;@ For the GBA
+#endif
+	.align 2
+;@----------------------------------------------------------------------------
+FlashReadByteLo:			;@ Read ROM byte (0x200000-0x3FFFFF)
+;@----------------------------------------------------------------------------
+	ldrb r1,infoMode
+	cmp r1,#CMD_ID_READ
+	ldrne r1,[t9ptr,#romBaseLo]
+	ldrbne r0,[r1,r0]!
+	bxne lr
+	b ReadFlashInfo
+;@----------------------------------------------------------------------------
+FlashReadByteHi:			;@ Read ROM byte (0x800000-0x9FFFFF)
+;@----------------------------------------------------------------------------
+	ldr r1,[t9ptr,#romBaseHi]
+	ldrb r0,[r1,r0]!
+	bx lr
+;@----------------------------------------------------------------------------
+FlashReadWordLo:			;@ Read ROM word (0x200000-0x3FFFFF)
+;@----------------------------------------------------------------------------
+	t9eatcycles 1
+	ldr r1,[t9ptr,#romBaseLo]
+	ldrh r0,[r1,r0]
+	bx lr
+;@----------------------------------------------------------------------------
+FlashReadWordHi:			;@ Read ROM word (0x800000-0x9FFFFF)
+;@----------------------------------------------------------------------------
+	t9eatcycles 1
+	ldr r1,[t9ptr,#romBaseHi]
+	ldrh r0,[r1,r0]
+	bx lr
+;@----------------------------------------------------------------------------
+infoMode:
+	.byte 0						;@ CMD_ID_READ, or memory.
+	.align 2
 ;@----------------------------------------------------------------------------
 #endif // #ifdef __arm__

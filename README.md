@@ -1,4 +1,4 @@
-# NGPFlash
+# NGPFlash V0.2.1
 
 SNK Neogeo Pocket Flash chip emulator for ARM32.
 
