@@ -243,6 +243,7 @@ checkProtectFromAdr:		;@ In r0=address, out r0=block protect; 0=read only 2=writ
 ;@----------------------------------------------------------------------------
 FlashWriteLO:				;@ In r0=value, r1=address.
 ;@----------------------------------------------------------------------------
+	bic r1,t9Mem,#0xFF000000
 	stmfd sp!,{r4-r5,lr}
 	and r0,r0,#0xFF
 	bic r4,r1,#0xFF0000

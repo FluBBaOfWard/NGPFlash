@@ -1,1 +1,1 @@
-#define NGPFLASHVERSION "V0.2.1"
+#define NGPFLASHVERSION "V0.2.2"

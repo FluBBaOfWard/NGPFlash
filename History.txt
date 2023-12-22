@@ -2,6 +2,9 @@ NGPFlash revision history
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
 
+V0.2.2 - 2023-12-22 (FluBBa)
+	Fixed writing by t9mem.
+
 V0.2.1 - 2023-12-20 (FluBBa)
 	Fixed writing to also support 16-bit memory.
 	Added functions for reading flash memory.
