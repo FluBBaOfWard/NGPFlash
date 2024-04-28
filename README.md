@@ -4,13 +4,13 @@ SNK Neogeo Pocket Flash chip emulator for ARM32.
 
 ## Projects that use this code
 
-* https://github.com/FluBBaOfWard/NGPDS
-* https://github.com/FluBBaOfWard/NGPGBA
+* <https://github.com/FluBBaOfWard/NGPDS>
+* <https://github.com/FluBBaOfWard/NGPGBA>
 
-## Credits:
+## Credits
 
 Fredrik Ahlström
 
 X/Twitter @TheRealFluBBa
 
-https://www.github.com/FluBBaOfWard
+<https://www.github.com/FluBBaOfWard>
